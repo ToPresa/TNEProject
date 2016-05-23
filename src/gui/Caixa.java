@@ -17,7 +17,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import agents.AgenteLeiloeiro;
 import agents.Leilao;
 import gui.Caixa;
 
@@ -46,8 +45,7 @@ public class Caixa extends JFrame{
 		JTextField quantity = new JTextField();
 		JTextField price = new JTextField();
 		
-		//combo = new JComboBox((new Object[] {"Oncologia", "Pediatria", "Urgencia", "Ortopedia", "Genecologia", "Medicina Dentaria"}));
-		JPanel p = new JPanel(new GridLayout(0,2));
+		JPanel p = new JPanel(new GridLayout(0,1));
 		p.setPreferredSize(new Dimension(400, 250));
 		//textbox nome do produto
 		p.add(label1);

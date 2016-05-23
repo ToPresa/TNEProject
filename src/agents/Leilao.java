@@ -43,7 +43,6 @@ public class Leilao extends Agent{
 					e.printStackTrace();
 				}		
 				
-				//list.adiciona(sala);
 				System.out.println(dadosLeilao + " adicionada!");
 			}
 	});
@@ -58,15 +57,20 @@ public class Leilao extends Agent{
 				ContainerController cc = getContainerController();
 				AgentController ac = null;
 				
-				try {
-					ac = cc.createNewAgent(dadosLeilao, "agents.AgenteLicitante" , null);
-					ac.start();
-				} catch (StaleProxyException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}		
+				//String[] parts = dadosLeilao.split(";");
+				//int numCompradores = Integer.parseInt(parts[1]);
 				
-				//list.adiciona(sala);
+				//while(numCompradores == 0) {
+					try {
+						ac = cc.createNewAgent(dadosLeilao, "agents.AgenteLicitante" , null);
+						ac.start();
+					} catch (StaleProxyException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}	
+				//	numCompradores--;
+				//}
+				
 				System.out.println(dadosLeilao + " adicionada!");
 			}
 	});
