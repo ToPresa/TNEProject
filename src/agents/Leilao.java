@@ -57,9 +57,9 @@ public class Leilao extends Agent{
 				ContainerController cc = getContainerController();
 				AgentController ac = null;
 				
-				//String[] parts = dadosLeilao.split(";");
-				//int numCompradores = Integer.parseInt(parts[1]);
-				
+				String[] parts = dadosLeilao.split(";");
+				int numCompradores = Integer.parseInt(parts[1]);
+				//System.out.println("CRLL " + numCompradores);
 				//while(numCompradores == 0) {
 					try {
 						ac = cc.createNewAgent(dadosLeilao, "agents.AgenteLicitante" , null);

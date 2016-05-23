@@ -97,7 +97,7 @@ public class Comprador extends JFrame {
 		
 
 		JButton cancelButton = new JButton("Cancel");
-		addButton.addActionListener(new ActionListener() {
+		cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
 				try {
 					System.exit(0);
@@ -110,6 +110,7 @@ public class Comprador extends JFrame {
 
 		p.add(addButton);
 		p.add(cancelButton);
+		
 		// Make the agent terminate when the user closes
 		// the GUI using the button on the upper right corner
 		addWindowListener(new WindowAdapter() {

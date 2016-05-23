@@ -15,9 +15,12 @@ public class AgenteLeiloeiro extends Agent {
 
 	private static final long serialVersionUID = 1L;
 
-	AID[] leilao;
-	String name;
-
+	private AID[] leilao;
+	private AID bestbuyer = null;
+	private String name;
+	private int bestprice;
+	private boolean productoffer = false;
+	
 	// Put agent initializations here
 	protected void setup() {
 		
@@ -44,7 +47,7 @@ public class AgenteLeiloeiro extends Agent {
 			}
 			
 			// Schedules a request to Hospital agents every 10s
-			addBehaviour(new TickerBehaviour(this, 5000) {
+			addBehaviour(new TickerBehaviour(this, 10000) {
 				private static final long serialVersionUID = 1L;
 
 				protected void onTick() {
@@ -85,10 +88,15 @@ public class AgenteLeiloeiro extends Agent {
 	private class OfferRequestsServer extends Behaviour {
 		
 		private static final long serialVersionUID = 1L;
-		int step =0;
-		float estado =0;
+		private int step =0;
+		private int totalBuyers = 0;
 		
 		public void action() {
+			
+			if(productoffer == true) {
+				return;
+			}
+			
 			switch (step) {
 
 			case 0: 
@@ -97,8 +105,8 @@ public class AgenteLeiloeiro extends Agent {
 				ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
 				cfp.setContent(name);
 				cfp.setConversationId("propostas");
-				cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
-																		// value
+				cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
+				
 				for (int i = 0; i < leilao.length; ++i) {
 					cfp.addReceiver(leilao[i]);		
 					myAgent.send(cfp);
@@ -119,21 +127,44 @@ public class AgenteLeiloeiro extends Agent {
 				MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 				ACLMessage reply = myAgent.receive(mt);
 				
-				if (reply != null && reply.getConversationId() == "propRecebidas") {
-					estado=1;
-					System.out.println("Leilao vendido " + name);
+				String[] parts = reply.toString().split(";");
+				int price = Integer.parseInt(parts[1]);
+				AID nameComprador = reply.getSender();
+				
+				System.out.println("PREÇO OFERICOD: " + price + " E O ID CRL " + reply.getConversationId() +  " TAMANHO DO FDO: " +leilao.length);	
+				
+				if (reply != null && reply.getConversationId() == "propostas") {
+								
+					if(bestbuyer == null || price < bestprice) {
+						bestprice = price;
+						bestbuyer = nameComprador;
+					}
+					System.out.println(totalBuyers + " " + leilao.length + "  CRLLL PREÇO ESCOLHIDO : " + price + " ao " + nameComprador);
+					totalBuyers++;
+					if(totalBuyers >= (leilao.length-1) ){
+						step=2;
+					}
 				}
-
 				else {
 					block();
 				}
+				break;
+			case 2: 
+			  //Send ao buyer with best offer
+		      System.out.println("VENDI ao " + bestbuyer + " pagou " + bestprice);
+		      productoffer = true;
+		      step = 3;
+		      break;
 			}
 		}
 
 		@Override
 		public boolean done() {
 			// TODO Auto-generated method stub
-			return (estado!=0);
+			if (step == 1 && bestbuyer == null) {
+		  		System.out.println("Attempt failed to sell: "+name);
+		  	}
+		    return (( step == 1 && bestbuyer == null) || step == 3);
 		}
 	} // End of inner class OfferRequestsServer
 

@@ -14,9 +14,11 @@ public class AgenteLicitante extends Agent{
 
 	private static final long serialVersionUID = 1L;
 
-	  AID[] leilao;
-	  String nameProduct;
-	  int budget, price;
+	  private AID[] leilao;
+	  private String nameProduct;
+	  private int budget, price;
+	  private boolean productoffer = false;
+	  
 	  // Put agent initializations here
 	  protected void setup() {
 	    
@@ -24,34 +26,34 @@ public class AgenteLicitante extends Agent{
 		  
 		// argumentos com informaçao do comprador
 		// name.getText()+";"+numC.getText()+";"+price.getText()+";"+budget.getText()+";"+comboChoice+";"+comboChoice2;
-			if (getAID().getLocalName().length() > 0) {
-				
-				String[] parts = getAID().getLocalName().split(";");
-				nameProduct = parts[0]; // name leilao			
-				budget = Integer.parseInt(parts[3]);
-				price = Integer.parseInt(parts[2]);
-				
-				DFAgentDescription dfd = new DFAgentDescription();
-				dfd.setName(getAID());
-				ServiceDescription sd = new ServiceDescription();
-				sd.setType("alocar-leilao");
-				sd.setName(nameProduct);
-				dfd.addServices(sd);
-				
-				try {
-					DFService.register(this, dfd);
-				} catch (FIPAException fe) {
-					fe.printStackTrace();
-				}
-				System.out.println("AUI CRL 1 " + nameProduct);
-				// Add the behaviour serving queries from buyer agents
-			    addBehaviour(new RequestsServer());
-			} else {
-				// Make the agent terminate
-				System.out.println("Não especificou o tipo de leilão!");
-				doDelete();
+		if (getAID().getLocalName().length() > 0) {
+			
+			String[] parts = getAID().getLocalName().split(";");
+			nameProduct = parts[0]; // name leilao			
+			budget = Integer.parseInt(parts[3]);
+			price = Integer.parseInt(parts[2]);
+			
+			DFAgentDescription dfd = new DFAgentDescription();
+			dfd.setName(getAID());
+			ServiceDescription sd = new ServiceDescription();
+			sd.setType("alocar-leilao");
+			sd.setName(getAID().getLocalName());
+			dfd.addServices(sd);
+			
+			try {
+				DFService.register(this, dfd);
+			} catch (FIPAException fe) {
+				fe.printStackTrace();
 			}
-	   
+			
+			System.out.println("AUI CRL 1 " + nameProduct);
+			// Add the behaviour serving queries from buyer agents
+		    addBehaviour(new RequestsServer());
+		} else {
+			// Make the agent terminate
+			System.out.println("Não especificou o tipo de leilão!");
+			doDelete();
+		}
 	  }
 	  
 	  private class RequestsServer extends CyclicBehaviour {
@@ -64,28 +66,27 @@ public class AgenteLicitante extends Agent{
 
 				ACLMessage msg = myAgent.receive(mt);
 				
-				if (msg != null) {
+				if (msg != null && productoffer == false) {
 					
 					// CFP Message received. Process it
 					String recebi = msg.getContent();
 					ACLMessage info = msg.createReply();
-					System.out.println("Recebi");
 					
-					if (msg.getConversationId() == "propostas") {
-
+					//System.out.println("Recebi ISTO : " + msg.getConversationId() + " EEE " + nameProduct);
+					
+					if (msg.getConversationId() == "propostas" && recebi.equals(nameProduct)) {
+						productoffer = true;
 						info.setPerformative(ACLMessage.INFORM);
-						info.setContent(nameProduct);
+						info.setContent(nameProduct+";"+price);
 						info.setConversationId("propRecebidas");
-
+						System.out.println("Quero entrar neste leilao: " + nameProduct);
 						myAgent.send(info);
 					}
 				}
-
 				else
 					block();
 			}
 	  }
-
 	  	
 	  // Put agent clean-up operations here
 	  protected void takeDown() {
@@ -96,8 +97,6 @@ public class AgenteLicitante extends Agent{
 	      fe.printStackTrace();
 	    }
 	    // Printout a dismissal message
-
-
 	    System.out.println("Leilao " + getAID().getLocalName() + " fechou!");
 	  }
 }
