@@ -1,1 +1,1 @@
-http://Toshiba.lan:7778/acc
+http://ToshibaAP:7778/acc

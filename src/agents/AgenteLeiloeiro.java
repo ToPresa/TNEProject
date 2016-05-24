@@ -3,6 +3,7 @@ package agents;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
+import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -20,6 +21,7 @@ public class AgenteLeiloeiro extends Agent {
 	private String name;
 	private int bestprice;
 	private boolean productoffer = false;
+	private int number;
 	
 	// Put agent initializations here
 	protected void setup() {
@@ -31,8 +33,10 @@ public class AgenteLeiloeiro extends Agent {
 		if (getAID().getLocalName().length() > 0) {
 			
 			String[] parts = getAID().getLocalName().split(";");
+			number = Integer.parseInt(parts[1]);
 			name = parts[0]; // name leilao			
-			
+			System.out.println("este e o meu nome: "+number);
+			//for(int i=0;i<number;i++){
 			DFAgentDescription dfd = new DFAgentDescription();
 			dfd.setName(getAID());
 			ServiceDescription sd = new ServiceDescription();
@@ -65,7 +69,7 @@ public class AgenteLeiloeiro extends Agent {
 						leilao = new AID[result.length];
 						for (int i = 0; i < result.length; ++i) {
 							leilao[i] = result[i].getName();
-							//System.out.println(leilao[i].getName());
+							System.out.println("cenas"+leilao[i].getName());
 						}
 					} catch (FIPAException fe) {
 						fe.printStackTrace();
@@ -91,6 +95,7 @@ public class AgenteLeiloeiro extends Agent {
 		private int step =0;
 		private int totalBuyers = 0;
 		
+
 		public void action() {
 			
 			if(productoffer == true) {
@@ -101,21 +106,26 @@ public class AgenteLeiloeiro extends Agent {
 
 			case 0: 
 				System.out.println("ENVIA PROPOSTAS");
-				//Solicitar propostas à aos compradores
+				//Solicitar propostas aos compradores
 				ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
+				
+				
+				for (int i = 0; i < leilao.length; ++i) {
+					System.out.println("este e o gajo que quero falar  "+leilao[0]);
+					cfp.addReceiver(leilao[i]);
+					
+				}
 				cfp.setContent(name);
 				cfp.setConversationId("propostas");
 				cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
 				
-				for (int i = 0; i < leilao.length; ++i) {
-					cfp.addReceiver(leilao[i]);		
-					myAgent.send(cfp);
-				}
-			
+				myAgent.send(cfp);
+			System.out.println("recebi isto   ");
 				step = 1;
 				break;
 
 			case 1:
+				System.out.println("oasdasdasdasd");
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
@@ -164,8 +174,9 @@ public class AgenteLeiloeiro extends Agent {
 			if (step == 1 && bestbuyer == null) {
 		  		System.out.println("Attempt failed to sell: "+name);
 		  	}
-		    return (( step == 1 && bestbuyer == null) || step == 3);
+		    return ( step == 3);
 		}
+		
 	} // End of inner class OfferRequestsServer
 
 

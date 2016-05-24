@@ -37,6 +37,7 @@ public class AgenteLicitante extends Agent{
 			dfd.setName(getAID());
 			ServiceDescription sd = new ServiceDescription();
 			sd.setType("alocar-leilao");
+			System.out.println("qwqwqwqw: "+getAID().getLocalName());
 			sd.setName(getAID().getLocalName());
 			dfd.addServices(sd);
 			
@@ -72,8 +73,8 @@ public class AgenteLicitante extends Agent{
 					String recebi = msg.getContent();
 					ACLMessage info = msg.createReply();
 					
-					//System.out.println("Recebi ISTO : " + msg.getConversationId() + " EEE " + nameProduct);
-					
+					System.out.println("Recebi ISTO : " + msg.getConversationId() + " EEE " + nameProduct);
+					System.out.println("olaaaaaaa: "+recebi);
 					if (msg.getConversationId() == "propostas" && recebi.equals(nameProduct)) {
 						productoffer = true;
 						info.setPerformative(ACLMessage.INFORM);
