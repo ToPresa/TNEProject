@@ -40,7 +40,7 @@ public class AgenteLeiloeiro extends Agent {
 			DFAgentDescription dfd = new DFAgentDescription();
 			dfd.setName(getAID());
 			ServiceDescription sd = new ServiceDescription();
-			sd.setType("alocar-leilao");
+			sd.setType("leilao");
 			sd.setName(name);
 			dfd.addServices(sd);
 			
@@ -143,15 +143,15 @@ public class AgenteLeiloeiro extends Agent {
 				
 				System.out.println("PREÇO OFERICOD: " + price + " E O ID CRL " + reply.getConversationId() +  " TAMANHO DO FDO: " +leilao.length);	
 				
-				if (reply != null && reply.getConversationId() == "propostas") {
+				if (reply != null && reply.getConversationId().equals("propRecebidas")) {
 								
-					if(bestbuyer == null || price < bestprice) {
+					if(bestbuyer == null || price > bestprice) {
 						bestprice = price;
 						bestbuyer = nameComprador;
 					}
 					System.out.println(totalBuyers + " " + leilao.length + "  CRLLL PREÇO ESCOLHIDO : " + price + " ao " + nameComprador);
 					totalBuyers++;
-					if(totalBuyers >= (leilao.length-1) ){
+					if(totalBuyers >= (leilao.length) ){
 						step=2;
 					}
 				}
