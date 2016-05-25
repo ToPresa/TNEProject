@@ -19,7 +19,7 @@ public class AgenteLeiloeiro extends Agent {
 	private AID[] leilao;
 	private AID bestbuyer = null;
 	private String name;
-	private int bestprice;
+	private int bestprice, secondbestprice;
 	private boolean productoffer = false;
 	private int number;
 	
@@ -30,12 +30,12 @@ public class AgenteLeiloeiro extends Agent {
 		
 		// argumentos com informaçao do leilao
 		// name.getText()+";"+quantity.getText()+";"+price.getText();
-		if (getAID().getLocalName().length() > 0) {
+		Object[] args = getArguments();
+		if (args != null && args.length > 0) {
 			
-			String[] parts = getAID().getLocalName().split(";");
-			number = Integer.parseInt(parts[1]);
-			name = parts[0]; // name leilao			
-			System.out.println("este e o meu nome: "+number);
+			number = Integer.parseInt((String) args[1]);
+			name = (String) args[0]; // name leilao			
+			
 			//for(int i=0;i<number;i++){
 			DFAgentDescription dfd = new DFAgentDescription();
 			dfd.setName(getAID());
@@ -51,7 +51,10 @@ public class AgenteLeiloeiro extends Agent {
 			}
 			
 			// Schedules a request to Hospital agents every 10s
-			addBehaviour(new TickerBehaviour(this, 10000) {
+			int Min = 8000;
+			int Max = 12000;
+			int time = Min + (int)(Math.random() * ((Max - Min) + 1));
+			addBehaviour(new TickerBehaviour(this, time) {
 				private static final long serialVersionUID = 1L;
 
 				protected void onTick() {
@@ -69,7 +72,7 @@ public class AgenteLeiloeiro extends Agent {
 						leilao = new AID[result.length];
 						for (int i = 0; i < result.length; ++i) {
 							leilao[i] = result[i].getName();
-							System.out.println("cenas"+leilao[i].getName());
+							//System.out.println("cenas"+leilao[i].getName());
 						}
 					} catch (FIPAException fe) {
 						fe.printStackTrace();
@@ -105,13 +108,13 @@ public class AgenteLeiloeiro extends Agent {
 			switch (step) {
 
 			case 0: 
-				System.out.println("ENVIA PROPOSTAS");
+				//System.out.println("ENVIA PROPOSTAS");
 				//Solicitar propostas aos compradores
 				ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
 				
 				
 				for (int i = 0; i < leilao.length; ++i) {
-					System.out.println("este e o gajo que quero falar  "+leilao[0]);
+					//System.out.println("este e o gajo que quero falar  "+leilao[i]);
 					cfp.addReceiver(leilao[i]);
 					
 				}
@@ -120,36 +123,31 @@ public class AgenteLeiloeiro extends Agent {
 				cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
 				
 				myAgent.send(cfp);
-			System.out.println("recebi isto   ");
+				//System.out.println("recebi isto   ");
 				step = 1;
 				break;
 
 			case 1:
-				System.out.println("oasdasdasdasd");
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 				
 				//Receber resposta da triagem que diz respeito ao meu estado de saúde
 				MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 				ACLMessage reply = myAgent.receive(mt);
 				
-				String[] parts = reply.toString().split(";");
+				String[] parts = reply.getContent().toString().split(";");
+
 				int price = Integer.parseInt(parts[1]);
 				AID nameComprador = reply.getSender();
 				
-				System.out.println("PREÇO OFERICOD: " + price + " E O ID CRL " + reply.getConversationId() +  " TAMANHO DO FDO: " +leilao.length);	
+				//System.out.println("PREÇO OFERICOD: " + price + " E O ID CRL " + reply.getConversationId() +  " TAMANHO DO FDO: " +leilao.length);	
 				
 				if (reply != null && reply.getConversationId().equals("propRecebidas")) {
 								
 					if(bestbuyer == null || price > bestprice) {
+						secondbestprice = bestprice;
 						bestprice = price;
 						bestbuyer = nameComprador;
 					}
-					System.out.println(totalBuyers + " " + leilao.length + "  CRLLL PREÇO ESCOLHIDO : " + price + " ao " + nameComprador);
+					//System.out.println(totalBuyers + " " + leilao.length + "  CRLLL PREÇO ESCOLHIDO : " + price + " ao " + nameComprador);
 					totalBuyers++;
 					if(totalBuyers >= (leilao.length) ){
 						step=2;
@@ -161,19 +159,16 @@ public class AgenteLeiloeiro extends Agent {
 				break;
 			case 2: 
 			  //Send ao buyer with best offer
-		      System.out.println("VENDI ao " + bestbuyer + " pagou " + bestprice);
+		      System.out.println("VENDI ao " + bestbuyer + " ofereceu " +bestprice  +" pagou " + secondbestprice);
 		      productoffer = true;
 		      step = 3;
+		      doDelete();
 		      break;
 			}
 		}
 
 		@Override
 		public boolean done() {
-			// TODO Auto-generated method stub
-			if (step == 1 && bestbuyer == null) {
-		  		System.out.println("Attempt failed to sell: "+name);
-		  	}
 		    return ( step == 3);
 		}
 		

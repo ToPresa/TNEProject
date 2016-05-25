@@ -85,7 +85,7 @@ public class Comprador extends JFrame {
 				try {
 					String comboChoice = combo.getSelectedItem().toString();
 					String comboChoice2 = combo2.getSelectedItem().toString();
-					String nomeProduto = name.getText()+";"+numC.getText()+";"+price.getText()+";"+budget.getText()+";"+comboChoice+";"+comboChoice2;
+					String nomeProduto[] = {name.getText(),numC.getText(),price.getText(), budget.getText(), comboChoice, comboChoice2};
 					myAgent.updateComprador(nomeProduto);
 				
 				} catch (Exception e) {

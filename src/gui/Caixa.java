@@ -65,7 +65,7 @@ public class Caixa extends JFrame{
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
 				try {
-					String nomeProduto = name.getText()+";"+quantity.getText()+";"+price.getText();
+					String nomeProduto[] = {name.getText(),quantity.getText(),price.getText()};
 					myAgent.updateLeilao(nomeProduto);
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(Caixa.this, "Invalid values. " + e.getMessage(), "Error",
