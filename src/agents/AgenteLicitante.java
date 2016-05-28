@@ -1,5 +1,6 @@
 package agents;
 
+import algorithm.algorithm;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -16,7 +17,8 @@ public class AgenteLicitante extends Agent{
 
 	  private AID[] leilao;
 	  private String nameProduct;
-	  private int budget, price;
+	  private double budget, price, dinamic;
+	  private boolean global;
 	  
 	  // Put agent initializations here
 	  protected void setup() {
@@ -27,10 +29,18 @@ public class AgenteLicitante extends Agent{
 		// name.getText()+";"+numC.getText()+";"+price.getText()+";"+budget.getText()+";"+comboChoice+";"+comboChoice2;
 		  Object[] args = getArguments();
 		  if (args != null && args.length > 0) {
-			
+			for(int i=0;i<args.length;i++){
+				System.out.println(args[i]);
+			}
 			nameProduct = (String) args[0]; // name leilao			
-			budget = Integer.parseInt((String) args[3]);
+			budget = Float.parseFloat((String) args[3]);
+			if(((String) args[4]).equals("global"))
+				global=true;
+			else
+				global=false;
 			price = Integer.parseInt((String) args[2]);
+			
+			
 			
 			DFAgentDescription dfd = new DFAgentDescription();
 			dfd.setName(getAID());
@@ -76,6 +86,9 @@ public class AgenteLicitante extends Agent{
 					//System.out.println("olaaaaaaa: "+recebi);
 					if (msg.getConversationId() == "propostas" && recebi.equals(nameProduct)) {
 						info.setPerformative(ACLMessage.INFORM);
+						//mensagem do static ou dinamic
+						algorithm pr = new algorithm(price,global,0,budget);
+						price=pr.setprice();
 						info.setContent(nameProduct+";"+price);
 						info.setConversationId("propRecebidas");
 						//System.out.println("Quero entrar neste leilao: " + nameProduct + " PREÇO " + price);
