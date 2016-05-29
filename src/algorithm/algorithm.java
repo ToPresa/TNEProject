@@ -16,17 +16,15 @@ public class algorithm {
 		
 	}
 
-	public double setprice() {
+	public double setpricelocal() {
 		double priceset=price;
-		if(!global){
-			
-		}
-		else{
 			//distribuicao normal abaixo do preco tipo metade da distribuição normal
 			Random rdn = new Random();
-			priceset=price-(price* Math.abs(rdn.nextGaussian())/2);
-		}
+			priceset=(price-(price/7*Math.abs(rdn.nextGaussian())));
 		return priceset;
+	}
+	public double setpriceglobal(){
+		return price;
 	}
 
 }

@@ -29,9 +29,6 @@ public class AgenteLicitante extends Agent{
 		// name.getText()+";"+numC.getText()+";"+price.getText()+";"+budget.getText()+";"+comboChoice+";"+comboChoice2;
 		  Object[] args = getArguments();
 		  if (args != null && args.length > 0) {
-			for(int i=0;i<args.length;i++){
-				System.out.println(args[i]);
-			}
 			nameProduct = (String) args[0]; // name leilao			
 			budget = Float.parseFloat((String) args[3]);
 			if(((String) args[4]).equals("global"))
@@ -39,14 +36,18 @@ public class AgenteLicitante extends Agent{
 			else
 				global=false;
 			price = Integer.parseInt((String) args[2]);
-			
+			algorithm pr = new algorithm(price,global,0,budget);
+			if(global){
+				price=pr.setpriceglobal();
+			}
+			else
+				price=pr.setpricelocal();
 			
 			
 			DFAgentDescription dfd = new DFAgentDescription();
 			dfd.setName(getAID());
 			ServiceDescription sd = new ServiceDescription();
 			sd.setType("alocar-leilao");
-			//System.out.println("qwqwqwqw: "+getAID().getLocalName());
 			sd.setName(getAID().getLocalName());
 			dfd.addServices(sd);
 			
@@ -87,8 +88,7 @@ public class AgenteLicitante extends Agent{
 					if (msg.getConversationId() == "propostas" && recebi.equals(nameProduct)) {
 						info.setPerformative(ACLMessage.INFORM);
 						//mensagem do static ou dinamic
-						algorithm pr = new algorithm(price,global,0,budget);
-						price=pr.setprice();
+						
 						info.setContent(nameProduct+";"+price);
 						info.setConversationId("propRecebidas");
 						//System.out.println("Quero entrar neste leilao: " + nameProduct + " PREÇO " + price);

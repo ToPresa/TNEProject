@@ -19,7 +19,7 @@ public class AgenteLeiloeiro extends Agent {
 	private AID[] leilao;
 	private AID bestbuyer = null;
 	private String name;
-	private int bestprice, secondbestprice;
+	private double bestprice=0.0, secondbestprice=0.0;
 	private boolean productoffer = false;
 	private int number;
 	
@@ -135,7 +135,8 @@ public class AgenteLeiloeiro extends Agent {
 				
 				String[] parts = reply.getContent().toString().split(";");
 
-				int price = Integer.parseInt(parts[1]);
+				double price = Double.parseDouble(parts[1]);
+				System.out.println(price);
 				AID nameComprador = reply.getSender();
 				
 				//System.out.println("PREÇO OFERICOD: " + price + " E O ID CRL " + reply.getConversationId() +  " TAMANHO DO FDO: " +leilao.length);	
@@ -146,6 +147,9 @@ public class AgenteLeiloeiro extends Agent {
 						secondbestprice = bestprice;
 						bestprice = price;
 						bestbuyer = nameComprador;
+					}
+					else if (price > secondbestprice){
+						secondbestprice = price;
 					}
 					//System.out.println(totalBuyers + " " + leilao.length + "  CRLLL PREÇO ESCOLHIDO : " + price + " ao " + nameComprador);
 					totalBuyers++;
