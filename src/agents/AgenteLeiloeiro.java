@@ -1,9 +1,13 @@
 package agents;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
-import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -19,7 +23,7 @@ public class AgenteLeiloeiro extends Agent {
 	private AID[] leilao;
 	private AID bestbuyer = null;
 	private String name;
-	private double bestprice=0.0, secondbestprice=0.0;
+	private double bestprice=0.0, secondbestprice=0.0 , realpriceproduct = 0.0;
 	private boolean productoffer = false;
 	private int number;
 	
@@ -35,7 +39,8 @@ public class AgenteLeiloeiro extends Agent {
 			
 			number = Integer.parseInt((String) args[1]);
 			name = (String) args[0]; // name leilao			
-			
+			realpriceproduct= Integer.parseInt((String) args[2]);
+					
 			//for(int i=0;i<number;i++){
 			DFAgentDescription dfd = new DFAgentDescription();
 			dfd.setName(getAID());
@@ -178,7 +183,6 @@ public class AgenteLeiloeiro extends Agent {
 		
 	} // End of inner class OfferRequestsServer
 
-
 	// Put agent clean-up operations here
 	protected void takeDown() {
 		// Deregister from the yellow pages
@@ -190,5 +194,40 @@ public class AgenteLeiloeiro extends Agent {
 		// Printout a dismissal message
 
 		System.out.println("Leilao " + getAID().getLocalName() + " fechou!");
+	}
+	
+	public void writeFile(String comprador, double secondbestprice) {
+		
+		String currentDirFile = System.getProperty("user.dir");
+
+		File file = new File(currentDirFile + "\\" + "resources" + "\\"
+				+ "sells.txt");
+
+		// if file doesnt exists, then create it
+		if (!file.exists()) {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		String content = comprador + ";" + secondbestprice + ";" + realpriceproduct + "\n";
+		
+		FileWriter fw;
+		try {
+			fw = new FileWriter(file.getAbsoluteFile(), true);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(content);
+			bw.close();
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		System.out.println("Writing Done");
+		
 	}
 }
