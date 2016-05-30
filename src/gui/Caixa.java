@@ -25,7 +25,7 @@ public class Caixa extends JFrame{
 	private static final long serialVersionUID = 1L;
 
 	private agents.Leilao myAgent;
-
+	
 	public Caixa(Leilao a) {
 		super(a.getLocalName());
 

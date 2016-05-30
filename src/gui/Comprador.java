@@ -44,7 +44,7 @@ public class Comprador extends JFrame {
 		label3.setText("Preço estimado do produto");
 		label4.setText("Dinheiro Disponivel");
 		label5.setText("Tipo de agente comprador");
-		label6.setText("Tipo ");
+		//label6.setText("Tipo ");
 		
 		JTextField numC = new JTextField();
 		JTextField name = new JTextField();
@@ -56,7 +56,7 @@ public class Comprador extends JFrame {
 		p.setPreferredSize(new Dimension(400, 250));
 		
 		combo = new JComboBox((new Object[] {"global", "local"}));
-		combo2  = new JComboBox((new Object[] {"dinamico", "estatico"}));
+		//combo2  = new JComboBox((new Object[] {"dinamico", "estatico"}));
 		
 		p.add(label5);
 		p.add(combo);
@@ -73,8 +73,8 @@ public class Comprador extends JFrame {
 		p.add(label4);
 		p.add(budget);
 		
-		p.add(label6);
-		p.add(combo2);
+		//p.add(label6);
+		//p.add(combo2);
 		
 		p.setBorder(nameBorder);
 		getContentPane().add(p);
@@ -84,8 +84,8 @@ public class Comprador extends JFrame {
 			public void actionPerformed(ActionEvent ev) {
 				try {
 					String comboChoice = combo.getSelectedItem().toString();
-					String comboChoice2 = combo2.getSelectedItem().toString();
-					String nomeProduto[] = {name.getText(),numC.getText(),price.getText(), budget.getText(), comboChoice, comboChoice2};
+					//String comboChoice2 = combo2.getSelectedItem().toString();
+					String nomeProduto[] = {name.getText(),numC.getText(),price.getText(), budget.getText(), comboChoice}; //combo2
 					myAgent.updateComprador(nomeProduto);
 				
 				} catch (Exception e) {

@@ -1,5 +1,7 @@
 package agents;
 
+import java.util.ArrayList;
+
 import algorithm.algorithm;
 import jade.core.AID;
 import jade.core.Agent;
@@ -15,16 +17,18 @@ public class AgenteLicitante extends Agent{
 
 	private static final long serialVersionUID = 1L;
 
-	  private AID[] leilao;
+	  private AID[] leilao,sdd;
 	  private String nameProduct;
 	  private double budget, price, dinamic;
-	  private boolean global;
+	  private boolean global, proposta;
+	  private int numberAuctions = 0;
+	  private ArrayList<String> OfferPrice = new ArrayList<String>();
 	  
 	  // Put agent initializations here
 	  protected void setup() {
 	    
 		  System.out.println("Bem Vindo Sr/Sra: " + getAID().getLocalName() + "!");
-		  
+		  proposta = false;
 		// argumentos com informaçao do comprador
 		// name.getText()+";"+numC.getText()+";"+price.getText()+";"+budget.getText()+";"+comboChoice+";"+comboChoice2;
 		  Object[] args = getArguments();
@@ -36,18 +40,12 @@ public class AgenteLicitante extends Agent{
 			else
 				global=false;
 			price = Integer.parseInt((String) args[2]);
-			algorithm pr = new algorithm(price,global,0,budget);
-			if(global){
-				price=pr.setpriceglobal();
-			}
-			else
-				price=pr.setpricelocal();
-			
+					
 			
 			DFAgentDescription dfd = new DFAgentDescription();
 			dfd.setName(getAID());
 			ServiceDescription sd = new ServiceDescription();
-			sd.setType("alocar-leilao");
+			sd.setType("licitante");
 			sd.setName(getAID().getLocalName());
 			dfd.addServices(sd);
 			
@@ -56,6 +54,29 @@ public class AgenteLicitante extends Agent{
 			} catch (FIPAException fe) {
 				fe.printStackTrace();
 			}
+			//////////////////////////////////////////////////////////
+			DFAgentDescription template = new DFAgentDescription();
+			ServiceDescription sd1 = new ServiceDescription();
+			sd1.setType("leilao-"+nameProduct);
+			template.addServices(sd1);
+			
+			try {
+				DFAgentDescription[] result = DFService.search(this,
+						template);
+				//System.out.println("Encontrei estes recursos:");
+
+				numberAuctions = result.length;
+				
+			} catch (FIPAException fe) {
+				fe.printStackTrace();
+			}
+			
+			algorithm pr = new algorithm(price,global,numberAuctions,budget);
+			if(global){
+				OfferPrice = pr.setpriceglobal();
+			}
+			else
+				price=pr.setpricelocal();
 			
 			//System.out.println("AUI CRL 1 " + nameProduct);
 			// Add the behaviour serving queries from buyer agents
@@ -71,6 +92,8 @@ public class AgenteLicitante extends Agent{
 			
 			private static final long serialVersionUID = 1L;
 			
+			
+			
 			public void action() {
 				MessageTemplate mt = MessageTemplate
 						.MatchPerformative(ACLMessage.INFORM);
@@ -83,17 +106,47 @@ public class AgenteLicitante extends Agent{
 					String recebi = msg.getContent();
 					ACLMessage info = msg.createReply();
 					
-					//System.out.println("Recebi ISTO : " + msg.getConversationId() + " EEE " + nameProduct);
-					//System.out.println("olaaaaaaa: "+recebi);
-					if (msg.getConversationId() == "propostas" && recebi.equals(nameProduct)) {
-						info.setPerformative(ACLMessage.INFORM);
-						//mensagem do static ou dinamic
-						
-						info.setContent(nameProduct+";"+price);
-						info.setConversationId("propRecebidas");
-						//System.out.println("Quero entrar neste leilao: " + nameProduct + " PREÇO " + price);
-						myAgent.send(info);
+					double numberrandom = 0;
+					if(!global) {
+						numberrandom = 0 + (Math.random() * (100 - 0));
 					}
+					
+					if(numberrandom < 35 && !proposta){
+						
+						if (msg.getConversationId() == "propostas" && recebi.equals(nameProduct)) {
+							info.setPerformative(ACLMessage.INFORM);
+							//mensagem do static ou dinamic
+							
+							if(global && OfferPrice.size() > 1){
+								price= Double.parseDouble(OfferPrice.get(0));
+								OfferPrice.remove(0);
+							}
+							else if(global && OfferPrice.size() == 1)
+								price=Double.parseDouble(OfferPrice.get(0));
+							
+							info.setContent(nameProduct+";"+price);
+							info.setConversationId("propRecebidas");
+							//System.out.println("Quero entrar neste leilao: " + nameProduct + " PREÇO " + price);
+							myAgent.send(info);
+							
+							if(!global) {
+								proposta=true;
+							}
+						}
+					}
+					else {
+						if (msg.getConversationId() == "propostas" && recebi.equals(nameProduct)) {
+							info.setPerformative(ACLMessage.INFORM);
+							//mensagem do static ou dinamic
+							
+							info.setContent(nameProduct+";"+"0.0");
+							info.setConversationId("propRecebidas");
+							//System.out.println("Quero entrar neste leilao: " + nameProduct + " PREÇO " + price);
+							myAgent.send(info);
+							
+						}
+					}
+					
 				}
 				else
 					block();
@@ -109,6 +162,6 @@ public class AgenteLicitante extends Agent{
 	      fe.printStackTrace();
 	    }
 	    // Printout a dismissal message
-	    System.out.println("Leilao " + getAID().getLocalName() + " fechou!");
+	    System.out.println("Licitante " + getAID().getLocalName() + " fechou!");
 	  }
 }

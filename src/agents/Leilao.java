@@ -17,6 +17,9 @@ public class Leilao extends Agent{
 	private static final long serialVersionUID = 1L;
 	private Caixa vendedorGui;
 	private Comprador compradorGui;
+
+	private int numberCompradores=0;
+	private int numberVendedores=0;
 	
 	protected void setup() {	
 		
@@ -40,28 +43,18 @@ public class Leilao extends Agent{
 				
 				int number= Integer.parseInt((String) dadosLeilao[1]);
 				
-				// Update the list of seller agents
-				DFAgentDescription template = new DFAgentDescription();
-				ServiceDescription sd = new ServiceDescription();
-				sd.setType("leilao");
-				template.addServices(sd);
-				DFAgentDescription[] result = null;
-				try {
-					result = DFService.search(myAgent,
-							template);				
-				} catch (FIPAException fe) {
-					fe.printStackTrace();
-				}
+				
 				
 				for(int i=0; i<number; i++) {
 					try {
-						ac = cc.createNewAgent("Leilao"+((i+1)+result.length), "agents.AgenteLeiloeiro" , dadosLeilao);
+						ac = cc.createNewAgent("Leilao"+((i+1)+numberVendedores), "agents.AgenteLeiloeiro" , dadosLeilao);
 						ac.start();
 					} catch (StaleProxyException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}	
 				}
+				numberVendedores+=number;
 				
 				System.out.println(dadosLeilao + " adicionada!");
 			}
@@ -78,29 +71,18 @@ public class Leilao extends Agent{
 				AgentController ac = null;
 				
 				int number= Integer.parseInt((String) dadosLeilao[1]);
-				
-				// Update the list of seller agents
-				DFAgentDescription template = new DFAgentDescription();
-				ServiceDescription sd = new ServiceDescription();
-				sd.setType("alocar-leilao");
-				template.addServices(sd);
-				DFAgentDescription[] result = null;
-				try {
-					result = DFService.search(myAgent,
-							template);				
-				} catch (FIPAException fe) {
-					fe.printStackTrace();
-				}
-				
+			
 				for(int i=0; i<number; i++) {
 					try {
-						ac = cc.createNewAgent("Licitante"+((i+1)+result.length), "agents.AgenteLicitante" , dadosLeilao);
+						
+						ac = cc.createNewAgent("Licitante-"+(String) dadosLeilao[4]+"-"+((i+1)+numberCompradores), "agents.AgenteLicitante" , dadosLeilao);
 						ac.start();
 					} catch (StaleProxyException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}	
 				}
+				numberCompradores+=number;
 								
 				System.out.println(dadosLeilao + " adicionada!");
 			}

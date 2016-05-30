@@ -1,17 +1,19 @@
 package algorithm;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class algorithm {
 	private double price,budget;
 	private boolean global;
-	private int dinamico;
+	private int numberAuctions;
+	private ArrayList<String> OfferPrice = new ArrayList<String>();
 	
-	public algorithm(double price, boolean global, int dinamico, double budget) {
+	public algorithm(double price, boolean global, int numberAuctions, double budget) {
 		// TODO Auto-generated constructor stub
 		this.price=price;
 		this.global=global;
-		this.dinamico=dinamico;
+		this.numberAuctions=numberAuctions;
 		this.budget=budget;
 		
 	}
@@ -23,8 +25,14 @@ public class algorithm {
 			priceset=(price-(price/7*Math.abs(rdn.nextGaussian())));
 		return priceset;
 	}
-	public double setpriceglobal(){
-		return price;
+	
+	public ArrayList<String> setpriceglobal(){
+		
+		//primeiro preço amis alto
+		OfferPrice.add(String.valueOf(price));
+		OfferPrice.add(String.valueOf(price));
+		
+		return OfferPrice;
 	}
 
 }

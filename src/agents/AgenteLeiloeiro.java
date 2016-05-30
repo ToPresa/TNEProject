@@ -45,7 +45,7 @@ public class AgenteLeiloeiro extends Agent {
 			DFAgentDescription dfd = new DFAgentDescription();
 			dfd.setName(getAID());
 			ServiceDescription sd = new ServiceDescription();
-			sd.setType("leilao");
+			sd.setType("leilao-"+name);
 			sd.setName(name);
 			dfd.addServices(sd);
 			
@@ -67,7 +67,7 @@ public class AgenteLeiloeiro extends Agent {
 					// Update the list of seller agents
 					DFAgentDescription template = new DFAgentDescription();
 					ServiceDescription sd = new ServiceDescription();
-					sd.setType("alocar-leilao");
+					sd.setType("licitante");
 					template.addServices(sd);
 					
 					try {
@@ -137,16 +137,16 @@ public class AgenteLeiloeiro extends Agent {
 				//Receber resposta da triagem que diz respeito ao meu estado de saúde
 				MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 				ACLMessage reply = myAgent.receive(mt);
-				
-				String[] parts = reply.getContent().toString().split(";");
-
-				double price = Double.parseDouble(parts[1]);
-				System.out.println(price);
-				AID nameComprador = reply.getSender();
-				
+						
 				//System.out.println("PREÇO OFERICOD: " + price + " E O ID CRL " + reply.getConversationId() +  " TAMANHO DO FDO: " +leilao.length);	
 				
 				if (reply != null && reply.getConversationId().equals("propRecebidas")) {
+					
+					String[] parts = reply.getContent().toString().split(";");
+
+					double price = Double.parseDouble(parts[1]);
+					//System.out.println(price);
+					AID nameComprador = reply.getSender();
 								
 					if(bestbuyer == null || price > bestprice) {
 						secondbestprice = bestprice;
@@ -168,7 +168,13 @@ public class AgenteLeiloeiro extends Agent {
 				break;
 			case 2: 
 			  //Send ao buyer with best offer
-		      System.out.println("VENDI ao " + bestbuyer + " ofereceu " +bestprice  +" pagou " + secondbestprice);
+		      if(bestprice != 0) {
+		    	  System.out.println("VENDI ao " + bestbuyer + " ofereceu " +bestprice  +" pagou " + secondbestprice);
+		      }
+		      else {
+		    	  System.out.println("Não conseguiu vender o produto!");
+		      }
+		      
 		      productoffer = true;
 		      step = 3;
 		      doDelete();
