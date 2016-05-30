@@ -22,7 +22,7 @@ public class AgenteLeiloeiro extends Agent {
 
 	private AID[] leilao;
 	private AID bestbuyer = null;
-	private String name;
+	private String name, nameAuction, nameBuyer;
 	private double bestprice=0.0, secondbestprice=0.0 , realpriceproduct = 0.0;
 	private boolean productoffer = false;
 	private int number;
@@ -31,6 +31,7 @@ public class AgenteLeiloeiro extends Agent {
 	protected void setup() {
 		
 		System.out.println("Bem Vindo Sr/Sra: " + getAID().getLocalName() + "!");
+		nameAuction = getAID().getLocalName();
 		
 		// argumentos com informaçao do leilao
 		// name.getText()+";"+quantity.getText()+";"+price.getText();
@@ -152,6 +153,7 @@ public class AgenteLeiloeiro extends Agent {
 						secondbestprice = bestprice;
 						bestprice = price;
 						bestbuyer = nameComprador;
+						nameBuyer = parts[2];
 					}
 					else if (price > secondbestprice){
 						secondbestprice = price;
@@ -170,6 +172,8 @@ public class AgenteLeiloeiro extends Agent {
 			  //Send ao buyer with best offer
 		      if(bestprice != 0) {
 		    	  System.out.println("VENDI ao " + bestbuyer + " ofereceu " +bestprice  +" pagou " + secondbestprice);
+		    	  //nomeLeilao;nomeProduto;preçoGanhou;preçoPagou;PreçoReal;Tipo(local, global)
+		    	  writeFile(nameAuction,name,bestprice,secondbestprice, realpriceproduct,nameBuyer);
 		      }
 		      else {
 		    	  System.out.println("Não conseguiu vender o produto!");
@@ -202,8 +206,9 @@ public class AgenteLeiloeiro extends Agent {
 		System.out.println("Leilao " + getAID().getLocalName() + " fechou!");
 	}
 	
-	public void writeFile(String comprador, double secondbestprice) {
+	public void writeFile(String nomeLeilao, String noemProduto, double bestprice, double secondbestprice, double precoReal, String tipoLeilao) {
 		
+		//nomeLeilao;nomeProduto;preçoGanhou;preçoPagou;PreçoReal;Tipo(local, global)
 		String currentDirFile = System.getProperty("user.dir");
 
 		File file = new File(currentDirFile + "\\" + "resources" + "\\"
@@ -219,7 +224,8 @@ public class AgenteLeiloeiro extends Agent {
 			}
 		}
 		
-		String content = comprador + ";" + secondbestprice + ";" + realpriceproduct + "\n";
+		String content = nomeLeilao + ";" + noemProduto + ";" + bestprice +";"+ 
+				secondbestprice + ";"+ realpriceproduct + ";" + tipoLeilao +"\n";
 		
 		FileWriter fw;
 		try {

@@ -18,7 +18,7 @@ public class AgenteLicitante extends Agent{
 	private static final long serialVersionUID = 1L;
 
 	  private AID[] leilao,sdd;
-	  private String nameProduct;
+	  private String nameProduct, name;
 	  private double budget, price, dinamic;
 	  private boolean global, proposta;
 	  private int numberAuctions = 0;
@@ -29,6 +29,9 @@ public class AgenteLicitante extends Agent{
 	    
 		  System.out.println("Bem Vindo Sr/Sra: " + getAID().getLocalName() + "!");
 		  proposta = false;
+		  String[] nameAux = (getAID().getLocalName()).split("-");
+		  name= nameAux[1];
+		 
 		// argumentos com informaçao do comprador
 		// name.getText()+";"+numC.getText()+";"+price.getText()+";"+budget.getText()+";"+comboChoice+";"+comboChoice2;
 		  Object[] args = getArguments();
@@ -124,7 +127,8 @@ public class AgenteLicitante extends Agent{
 							else if(global && OfferPrice.size() == 1)
 								price=Double.parseDouble(OfferPrice.get(0));
 							
-							info.setContent(nameProduct+";"+price);
+							
+							info.setContent(nameProduct+";"+price+";"+name);
 							info.setConversationId("propRecebidas");
 							//System.out.println("Quero entrar neste leilao: " + nameProduct + " PREÇO " + price);
 							myAgent.send(info);
@@ -139,7 +143,7 @@ public class AgenteLicitante extends Agent{
 							info.setPerformative(ACLMessage.INFORM);
 							//mensagem do static ou dinamic
 							
-							info.setContent(nameProduct+";"+"0.0");
+							info.setContent(nameProduct+";"+"0.0"+";"+name);
 							info.setConversationId("propRecebidas");
 							//System.out.println("Quero entrar neste leilao: " + nameProduct + " PREÇO " + price);
 							myAgent.send(info);
