@@ -32,6 +32,12 @@ public class algorithm {
 		OfferPrice.add(String.valueOf(price));
 		OfferPrice.add(String.valueOf(price));
 		
+		//calcular b pela formula (é so mesmo perceber a formula e copiar) pag10  (5)   
+		//cumulative distribution G(x) has bounded support [0, vmax],
+		
+		//ver os 3 casos do budget pag17
+		//easy
+		
 		return OfferPrice;
 	}
 

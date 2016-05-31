@@ -19,8 +19,8 @@ public class AgenteLicitante extends Agent{
 
 	  private AID[] leilao,sdd;
 	  private String nameProduct, name;
-	  private double budget, price, dinamic;
-	  private boolean global, proposta;
+	  private double budget, price, dinamic,globalcurrentacc=0;
+	  private boolean global, proposta, first=true;
 	  private int numberAuctions = 0;
 	  private ArrayList<String> OfferPrice = new ArrayList<String>();
 	  
@@ -114,8 +114,8 @@ public class AgenteLicitante extends Agent{
 						numberrandom = 0 + (Math.random() * (100 - 0));
 					}
 					
-					if(numberrandom < 35 && !proposta){
-						
+					if((numberrandom < 35 && !proposta && !global)||(global && budget>=globalcurrentacc)||(global && first)){
+						first=false;
 						if (msg.getConversationId() == "propostas" && recebi.equals(nameProduct)) {
 							info.setPerformative(ACLMessage.INFORM);
 							//mensagem do static ou dinamic
@@ -127,7 +127,7 @@ public class AgenteLicitante extends Agent{
 							else if(global && OfferPrice.size() == 1)
 								price=Double.parseDouble(OfferPrice.get(0));
 							
-							
+							globalcurrentacc += price;
 							info.setContent(nameProduct+";"+price+";"+name);
 							info.setConversationId("propRecebidas");
 							//System.out.println("Quero entrar neste leilao: " + nameProduct + " PREÇO " + price);
