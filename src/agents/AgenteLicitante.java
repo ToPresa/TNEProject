@@ -114,8 +114,10 @@ public class AgenteLicitante extends Agent{
 						numberrandom = 0 + (Math.random() * (100 - 0));
 					}
 					
-					if((numberrandom < 35 && !proposta && !global)||(global && budget>=globalcurrentacc)||(global && first)){
+					if((numberrandom < 20 && !proposta && !global)||(global && (budget>=globalcurrentacc || budget==0))||(global && first)){
 						first=false;
+						if(global)
+							System.out.println("sou global caralhooooooooooooooooooooooooooooooooooooooo");
 						if (msg.getConversationId() == "propostas" && recebi.equals(nameProduct)) {
 							info.setPerformative(ACLMessage.INFORM);
 							//mensagem do static ou dinamic

@@ -3,6 +3,7 @@ package algorithm;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.apache.commons.math3.distribution.NormalDistribution;
 public class algorithm {
 	private double price,budget;
 	private boolean global;
@@ -29,8 +30,19 @@ public class algorithm {
 	public ArrayList<String> setpriceglobal(){
 		
 		//primeiro preço amis alto
-		OfferPrice.add(String.valueOf(price));
-		OfferPrice.add(String.valueOf(price));
+		//OfferPrice.add(String.valueOf(price));
+		//OfferPrice.add(String.valueOf(price));
+		//NormalDistribution cumulative = new NormalDistribution();	
+		//cumulative.cumulativeProbability(x);
+		double cenas=1;
+		for(int i=0;i<numberAuctions;i++){
+			cenas*=(G(setpricelocal()));
+			System.out.println("cenas: "+cenas);
+		}
+		double newprice=cenas*price;
+		OfferPrice.add(String.valueOf(newprice));
+		System.out.println("caralho do preco: "+newprice);
+		
 		
 		//calcular b pela formula (é so mesmo perceber a formula e copiar) pag10  (5)   
 		//cumulative distribution G(x) has bounded support [0, vmax],
@@ -39,6 +51,10 @@ public class algorithm {
 		//easy
 		
 		return OfferPrice;
+	}
+	private double G(double x){
+		System.out.println("g(x): "+Math.pow(x, 1.0/3.0)/(Math.pow(Math.E, Math.log(price)/3)));
+		return Math.pow(x, 1.0/3.0)/(Math.pow(Math.E, Math.log(price)/3));
 	}
 
 }
