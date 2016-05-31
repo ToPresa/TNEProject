@@ -42,7 +42,18 @@ public class AgenteLicitante extends Agent{
 				global=true;
 			else
 				global=false;
-			price = Integer.parseInt((String) args[2]);
+			
+			  try{
+				  price = Integer.parseInt(((String) args[2]));
+	 	
+	              //System.out.println("Value parsed :"+i);
+	
+	          }catch(NumberFormatException ex){
+	
+	              System.err.println("Ilegal input");
+	
+	          }
+			//price = Integer.parseInt(((String) args[2]).trim());
 					
 			
 			DFAgentDescription dfd = new DFAgentDescription();

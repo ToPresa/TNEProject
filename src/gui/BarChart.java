@@ -30,11 +30,14 @@ public class BarChart extends ApplicationFrame
 
 	private static final long serialVersionUID = 1L;
 	
-	private ArrayList<String> NamesAuctions = new ArrayList<String>();
+	 private ArrayList<String> NamesAuctions = new ArrayList<String>();
 	 private ArrayList<String> SellPrice = new ArrayList<String>();
 	 private ArrayList<String> TypeBuyer = new ArrayList<String>();
 	 private double realPrice = 0.0;
 	 private String nameProductSelled;
+	 
+	 private ArrayList<String> LocalPrices = new ArrayList<String>();
+	 private ArrayList<String> GlobalPrices = new ArrayList<String>();
 	
 	 public BarChart(final String title) {
 
@@ -51,9 +54,9 @@ public class BarChart extends ApplicationFrame
 			}
 	      
 	        // create the first renderer...
-	  //      final CategoryLabelGenerator generator = new StandardCategoryLabelGenerator();
+	        // final CategoryLabelGenerator generator = new StandardCategoryLabelGenerator();
 	        final CategoryItemRenderer renderer = new BarRenderer();
-	    //    renderer.setLabelGenerator(generator);
+	        // renderer.setLabelGenerator(generator);
 	        renderer.setItemLabelsVisible(true);
 	        
 	        final CategoryPlot plot = new CategoryPlot();
@@ -89,12 +92,33 @@ public class BarChart extends ApplicationFrame
 	        plot.getDomainAxis().setCategoryLabelPositions(CategoryLabelPositions.UP_45);
 	        final JFreeChart chart = new JFreeChart(plot);
 	        chart.setTitle("Resultados Produto -> " + nameProductSelled);
-	      //  chart.setLegend(new StandardLegend());
+	        // chart.setLegend(new StandardLegend());
 
 	        // add the chart to a panel...
 	        final ChartPanel chartPanel = new ChartPanel(chart);
 	        chartPanel.setPreferredSize(new java.awt.Dimension(700, 470));
 	        setContentPane(chartPanel);
+	        
+	        int tamanhoL = LocalPrices.size()/2;
+	        double mediaLocal=0.0;
+	   
+	        for(int i=0; i < LocalPrices.size(); i+=2) {
+	        	mediaLocal += ( Double.parseDouble (LocalPrices.get(i+1)) / Double.parseDouble (LocalPrices.get(i)) );
+	        	System.out.println("JA CRL : " + mediaLocal );
+	        }
+	        
+	        int tamanhoG = GlobalPrices.size()/2;
+	        double mediaGlobal = 0.0;
+	        for(int i=0; i < GlobalPrices.size(); i+=2) {
+	        	mediaGlobal += ( Double.parseDouble (GlobalPrices.get(i+1)) / Double.parseDouble (GlobalPrices.get(i+1)) );
+	        }
+	        
+	        double MediaGlobal = (mediaGlobal/tamanhoG);
+	        
+	        double MediaLocal = (mediaLocal/tamanhoL);
+	        
+	        
+	        System.out.println("MEDIA LOCAL : " + MediaLocal + "  MEDIA GLOBAL : " + MediaGlobal);
 
 	    }
 
@@ -142,14 +166,28 @@ public class BarChart extends ApplicationFrame
 					 realPrice = Double.parseDouble(parts[4]);
 					 nameProductSelled = parts[1];
 					 stringBuffer.append("\n");
+					 
+					 //System.out.println("AI : " + TypeBuyer);
+					 
+					 if(TypeBuyer.get(TypeBuyer.size() - 1).equals("local")){
+						 System.out.println("AQUI LOCAL");
+						 LocalPrices.add(String.valueOf(realPrice));
+						 LocalPrices.add(String.valueOf(SellPrice.get(SellPrice.size() - 1)));
+					 }
+					 else {
+
+						 System.out.println("AQUI GLOBAL");
+						 GlobalPrices.add(String.valueOf(realPrice));
+						 GlobalPrices.add(String.valueOf(SellPrice.get(SellPrice.size() - 1)));
+					 }
 
 				}
 				System.out.println(NamesAuctions.size() + "  " + SellPrice.size() + "  " + TypeBuyer.size());
 				
 				// Dar delete dos dados do file
-				PrintWriter writer = new PrintWriter(file);
-				writer.print("");
-				writer.close();
+				//PrintWriter writer = new PrintWriter(file);
+				//writer.print("");
+				//writer.close();
 				
 				fileReader.close();
 
