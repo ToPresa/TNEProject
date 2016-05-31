@@ -37,11 +37,9 @@ public class algorithm {
 		double cenas=1;
 		for(int i=0;i<numberAuctions;i++){
 			cenas*=(G(setpricelocal()));
-			System.out.println("cenas: "+cenas);
 		}
 		double newprice=cenas*price;
 		OfferPrice.add(String.valueOf(newprice));
-		System.out.println("caralho do preco: "+newprice);
 		
 		
 		//calcular b pela formula (é so mesmo perceber a formula e copiar) pag10  (5)   
@@ -53,7 +51,6 @@ public class algorithm {
 		return OfferPrice;
 	}
 	private double G(double x){
-		System.out.println("g(x): "+Math.pow(x, 1.0/3.0)/(Math.pow(Math.E, Math.log(price)/3)));
 		return Math.pow(x, 1.0/3.0)/(Math.pow(Math.E, Math.log(price)/3));
 	}
 
