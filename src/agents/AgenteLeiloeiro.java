@@ -23,73 +23,72 @@ public class AgenteLeiloeiro extends Agent {
 	private AID[] leilao;
 	private AID bestbuyer = null;
 	private String name, nameAuction, nameBuyer;
-	private double bestprice=0.0, secondbestprice=0.0 , realpriceproduct = 0.0;
+	private double bestprice = 0.0, secondbestprice = 0.0, realpriceproduct = 0.0;
 	private boolean productoffer = false;
 	private int number;
-	
+
 	// Put agent initializations here
 	protected void setup() {
-		
+
 		System.out.println("Bem Vindo Sr/Sra: " + getAID().getLocalName() + "!");
 		nameAuction = getAID().getLocalName();
-		
+
 		// argumentos com informaçao do leilao
 		// name.getText()+";"+quantity.getText()+";"+price.getText();
 		Object[] args = getArguments();
 		if (args != null && args.length > 0) {
-			
+
 			number = Integer.parseInt((String) args[1]);
-			name = (String) args[0]; // name leilao			
-			realpriceproduct= Integer.parseInt((String) args[2]);
-					
-			//for(int i=0;i<number;i++){
+			name = (String) args[0]; // name leilao
+			realpriceproduct = Integer.parseInt((String) args[2]);
+
+			// for(int i=0;i<number;i++){
 			DFAgentDescription dfd = new DFAgentDescription();
 			dfd.setName(getAID());
 			ServiceDescription sd = new ServiceDescription();
-			sd.setType("leilao-"+name);
+			sd.setType("leilao-" + name);
 			sd.setName(name);
 			dfd.addServices(sd);
-			
+
 			try {
 				DFService.register(this, dfd);
 			} catch (FIPAException fe) {
 				fe.printStackTrace();
 			}
-			
+
 			// Schedules a request to Hospital agents every 10s
 			int Min = 8000;
 			int Max = 12000;
-			int time = Min + (int)(Math.random() * ((Max - Min) + 1));
+			int time = Min + (int) (Math.random() * ((Max - Min) + 1));
 			addBehaviour(new TickerBehaviour(this, time) {
 				private static final long serialVersionUID = 1L;
 
 				protected void onTick() {
-					System.out.println("A tentar vender: "+ name);
+					System.out.println("A tentar vender: " + name);
 					// Update the list of seller agents
 					DFAgentDescription template = new DFAgentDescription();
 					ServiceDescription sd = new ServiceDescription();
 					sd.setType("licitante");
 					template.addServices(sd);
-					
+
 					try {
-						DFAgentDescription[] result = DFService.search(myAgent,
-								template);
-						//System.out.println("Encontrei estes recursos:");
+						DFAgentDescription[] result = DFService.search(myAgent, template);
+						// System.out.println("Encontrei estes recursos:");
 						leilao = new AID[result.length];
 						for (int i = 0; i < result.length; ++i) {
 							leilao[i] = result[i].getName();
-							//System.out.println("cenas"+leilao[i].getName());
+							// System.out.println("cenas"+leilao[i].getName());
 						}
 					} catch (FIPAException fe) {
 						fe.printStackTrace();
 					}
-					
+
 					// Perform the request
 					// Add the behaviour serving queries from buyer agents
-				    addBehaviour(new OfferRequestsServer());
+					addBehaviour(new OfferRequestsServer());
 				}
 			});
-			
+
 		} else {
 			// Make the agent terminate
 			System.out.println("Não especificou o tipo de leilão!");
@@ -97,100 +96,119 @@ public class AgenteLeiloeiro extends Agent {
 		}
 
 	}
-	
+
 	private class OfferRequestsServer extends Behaviour {
-		
+
 		private static final long serialVersionUID = 1L;
-		private int step =0;
+		private int step = 0;
 		private int totalBuyers = 0;
-		
 
 		public void action() {
-			
-			if(productoffer == true) {
+
+			if (productoffer == true) {
 				return;
 			}
-			
+
 			switch (step) {
 
-			case 0: 
-				//System.out.println("ENVIA PROPOSTAS");
-				//Solicitar propostas aos compradores
+			case 0:
+				// System.out.println("ENVIA PROPOSTAS");
+				// Solicitar propostas aos compradores
 				ACLMessage cfp = new ACLMessage(ACLMessage.INFORM);
-				
-				
+
 				for (int i = 0; i < leilao.length; ++i) {
-					//System.out.println("este e o gajo que quero falar  "+leilao[i]);
+					// System.out.println("este e o gajo que quero falar
+					// "+leilao[i]);
 					cfp.addReceiver(leilao[i]);
-					
+
 				}
 				cfp.setContent(name);
 				cfp.setConversationId("propostas");
-				cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
-				
+				cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																		// value
+
 				myAgent.send(cfp);
-				//System.out.println("recebi isto   ");
+				// System.out.println("recebi isto ");
 				step = 1;
 				break;
 
 			case 1:
-				
-				//Receber resposta da triagem que diz respeito ao meu estado de saúde
+
+				// Receber resposta da triagem que diz respeito ao meu estado de
+				// saúde
 				MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 				ACLMessage reply = myAgent.receive(mt);
-						
-				//System.out.println("PREÇO OFERICOD: " + price + " E O ID CRL " + reply.getConversationId() +  " TAMANHO DO FDO: " +leilao.length);	
-				
+
+				// System.out.println("PREÇO OFERICOD: " + price + " E O ID CRL
+				// " + reply.getConversationId() + " TAMANHO DO FDO: "
+				// +leilao.length);
+
 				if (reply != null && reply.getConversationId().equals("propRecebidas")) {
-					
+
 					String[] parts = reply.getContent().toString().split(";");
 
 					double price = Double.parseDouble(parts[1]);
-					//System.out.println(price);
+					// System.out.println(price);
 					AID nameComprador = reply.getSender();
-								
-					if(bestbuyer == null || price > bestprice) {
+
+					if (bestbuyer == null || price > bestprice) {
 						secondbestprice = bestprice;
 						bestprice = price;
 						bestbuyer = nameComprador;
 						nameBuyer = parts[2];
-					}
-					else if (price > secondbestprice){
+					} else if (price > secondbestprice) {
 						secondbestprice = price;
 					}
-					//System.out.println(totalBuyers + " " + leilao.length + "  CRLLL PREÇO ESCOLHIDO : " + price + " ao " + nameComprador);
+					// System.out.println(totalBuyers + " " + leilao.length + "
+					// CRLLL PREÇO ESCOLHIDO : " + price + " ao " +
+					// nameComprador);
 					totalBuyers++;
-					if(totalBuyers >= (leilao.length) ){
-						step=2;
+					if (totalBuyers >= (leilao.length)) {
+						step = 2;
 					}
-				}
-				else {
+				} else {
 					block();
 				}
 				break;
-			case 2: 
-			  //Send ao buyer with best offer
-		      if(bestprice != 0) {
-		    	  System.out.println("VENDI ao " + bestbuyer + " ofereceu " +bestprice  +" pagou " + secondbestprice);
-		    	  //nomeLeilao;nomeProduto;preçoGanhou;preçoPagou;PreçoReal;Tipo(local, global)
-		    	  writeFile(nameAuction,name,bestprice,secondbestprice, realpriceproduct,nameBuyer);
-		      }
-		      else {
-		    	  System.out.println("Não conseguiu vender o produto!");
-		      }
-		      
-		      productoffer = true;
-		      step = 3;
-		      doDelete();
-		      break;
+			case 2:
+				// Send ao buyer with best offer
+				ACLMessage cfp1 = new ACLMessage(ACLMessage.INFORM);
+				if (bestprice != 0 && secondbestprice != 0) {
+
+					for (int i = 0; i < leilao.length; ++i) {
+						// System.out.println("este e o gajo que quero falar
+						// "+leilao[i]);
+						cfp1.addReceiver(leilao[i]);
+
+					}
+					cfp1.setContent(bestprice + ";" + secondbestprice);
+					cfp1.setConversationId("resultados");
+					cfp1.setReplyWith("cfp" + System.currentTimeMillis()); // Unique
+																			// value
+
+					myAgent.send(cfp1);
+
+					System.out
+							.println("VENDI ao " + bestbuyer + " ofereceu " + bestprice + " pagou " + secondbestprice);
+					// nomeLeilao;nomeProduto;preçoGanhou;preçoPagou;PreçoReal;Tipo(local,
+					// global)
+					writeFile(nameAuction, name, bestprice, secondbestprice, realpriceproduct, nameBuyer);
+				} else {
+					System.out.println("Não conseguiu vender o produto!");
+				}
+
+				productoffer = true;
+				step = 3;
+				doDelete();
+				break;
 			}
 		}
 
 		@Override
 		public boolean done() {
-		    return ( step == 3);
+			return (step == 3);
 		}
-		
+
 	} // End of inner class OfferRequestsServer
 
 	// Put agent clean-up operations here
@@ -205,14 +223,15 @@ public class AgenteLeiloeiro extends Agent {
 
 		System.out.println("Leilao " + getAID().getLocalName() + " fechou!");
 	}
-	
-	public void writeFile(String nomeLeilao, String noemProduto, double bestprice, double secondbestprice, double precoReal, String tipoLeilao) {
-		
-		//nomeLeilao;nomeProduto;preçoGanhou;preçoPagou;PreçoReal;Tipo(local, global)
+
+	public void writeFile(String nomeLeilao, String noemProduto, double bestprice, double secondbestprice,
+			double precoReal, String tipoLeilao) {
+
+		// nomeLeilao;nomeProduto;preçoGanhou;preçoPagou;PreçoReal;Tipo(local,
+		// global)
 		String currentDirFile = System.getProperty("user.dir");
 
-		File file = new File(currentDirFile + "\\" + "resources" + "\\"
-				+ "sells.txt");
+		File file = new File(currentDirFile + "\\" + "resources" + "\\" + "sells.txt");
 
 		// if file doesnt exists, then create it
 		if (!file.exists()) {
@@ -223,10 +242,10 @@ public class AgenteLeiloeiro extends Agent {
 				e.printStackTrace();
 			}
 		}
-		
-		String content = nomeLeilao + ";" + noemProduto + ";" + bestprice +";"+ 
-				secondbestprice + ";"+ realpriceproduct + ";" + tipoLeilao +"\n";
-		
+
+		String content = nomeLeilao + ";" + noemProduto + ";" + bestprice + ";" + secondbestprice + ";"
+				+ realpriceproduct + ";" + tipoLeilao + "\n";
+
 		FileWriter fw;
 		try {
 			fw = new FileWriter(file.getAbsoluteFile(), true);
@@ -238,8 +257,8 @@ public class AgenteLeiloeiro extends Agent {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
+
 		System.out.println("Writing Done");
-		
+
 	}
 }

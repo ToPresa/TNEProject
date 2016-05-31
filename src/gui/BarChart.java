@@ -110,7 +110,7 @@ public class BarChart extends ApplicationFrame
 	        int tamanhoG = GlobalPrices.size()/2;
 	        double mediaGlobal = 0.0;
 	        for(int i=0; i < GlobalPrices.size(); i+=2) {
-	        	mediaGlobal += ( Double.parseDouble (GlobalPrices.get(i+1)) / Double.parseDouble (GlobalPrices.get(i+1)) );
+	        	mediaGlobal += ( Double.parseDouble (GlobalPrices.get(i+1)) / Double.parseDouble (GlobalPrices.get(i)) );
 	        }
 	        
 	        double MediaGlobal = (mediaGlobal/tamanhoG);
@@ -130,13 +130,22 @@ public class BarChart extends ApplicationFrame
 	        demo.setVisible(true);
 
 	    }
+	 
+	 	public void run() {
+
+	        final BarChart demo = new BarChart("Leilões Estatisticas");
+	        demo.pack();
+	        RefineryUtilities.centerFrameOnScreen(demo);
+	        demo.setVisible(true);
+
+	    }
 	    
 	    public String typeBuyer(String type) {
-	    	if (type.equals("Global")) {
-	    		return "G";
+	    	if (type.equals("local")) {
+	    		return "L";
 	    	}
 	    	else
-	    		return "L";
+	    		return "G";
 	    }
 	    
 		public void readFile() {
@@ -161,7 +170,7 @@ public class BarChart extends ApplicationFrame
 					String[] parts = line.split(";");
 					//buscar os valores
 					 NamesAuctions.add(parts[0]);
-					 SellPrice.add(parts[2]); 
+					 SellPrice.add(parts[3]); 
 					 TypeBuyer.add(parts[5]);
 					 realPrice = Double.parseDouble(parts[4]);
 					 nameProductSelled = parts[1];
@@ -170,13 +179,12 @@ public class BarChart extends ApplicationFrame
 					 //System.out.println("AI : " + TypeBuyer);
 					 
 					 if(TypeBuyer.get(TypeBuyer.size() - 1).equals("local")){
-						 System.out.println("AQUI LOCAL");
+						 //System.out.println("AQUI LOCAL");
 						 LocalPrices.add(String.valueOf(realPrice));
 						 LocalPrices.add(String.valueOf(SellPrice.get(SellPrice.size() - 1)));
 					 }
 					 else {
-
-						 System.out.println("AQUI GLOBAL");
+						 //System.out.println("AQUI GLOBAL");
 						 GlobalPrices.add(String.valueOf(realPrice));
 						 GlobalPrices.add(String.valueOf(SellPrice.get(SellPrice.size() - 1)));
 					 }

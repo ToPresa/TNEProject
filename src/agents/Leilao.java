@@ -1,5 +1,6 @@
 package agents;
 
+import gui.BarChart;
 import gui.Caixa;
 import gui.Comprador;
 import jade.core.AID;
@@ -17,7 +18,7 @@ public class Leilao extends Agent{
 	private static final long serialVersionUID = 1L;
 	private Caixa vendedorGui;
 	private Comprador compradorGui;
-
+	private BarChart barchart;
 	private int numberCompradores=0;
 	private int numberVendedores=0;
 	
@@ -100,7 +101,9 @@ public class Leilao extends Agent{
 		// Close the GUI
 		vendedorGui.dispose();
 		compradorGui.dispose();
-	
+		
+		barchart.run();
+		
 		// Printout a dismissal message
 		System.out.println("Leiloeiro " + getAID().getLocalName() + " fechou!");
 	}
