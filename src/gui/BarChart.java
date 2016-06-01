@@ -154,16 +154,7 @@ public class BarChart extends ApplicationFrame
 
 	    }
 
-	    public static void main(final String[] args) {
-
-	        final BarChart demo = new BarChart("Leilões Estatisticas");
-	        demo.pack();
-	        RefineryUtilities.centerFrameOnScreen(demo);
-	        demo.setVisible(true);
-
-	    }
-	    	 
-	 /*	public void run() {
+	   /* public static void main(final String[] args) {
 
 	        final BarChart demo = new BarChart("Leilões Estatisticas");
 	        demo.pack();
@@ -171,6 +162,15 @@ public class BarChart extends ApplicationFrame
 	        demo.setVisible(true);
 
 	    }*/
+	    	 
+	 	public void run() {
+
+	        final BarChart demo = new BarChart("Leilões Estatisticas");
+	        demo.pack();
+	        RefineryUtilities.centerFrameOnScreen(demo);
+	        demo.setVisible(true);
+
+	    }
 	    
 	    public String typeBuyer(String type) {
 	    	if (type.equals("local")) {
@@ -228,9 +228,9 @@ public class BarChart extends ApplicationFrame
 				//System.out.println(NamesAuctions.size() + "  " + SellPrice.size() + "  " + TypeBuyer.size());
 				
 				// Dar delete dos dados do file
-				PrintWriter writer = new PrintWriter(file);
-				writer.print("");
-				writer.close();
+				//PrintWriter writer = new PrintWriter(file);
+				//writer.print("");
+				//writer.close();
 				
 				fileReader.close();
 

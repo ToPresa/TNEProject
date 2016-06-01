@@ -1,10 +1,13 @@
 package agents;
 
+
 import gui.BarChart;
 import gui.Caixa;
 import gui.Comprador;
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
+import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -21,6 +24,11 @@ public class Leilao extends Agent{
 	private BarChart barchart;
 	private int numberCompradores=0;
 	private int numberVendedores=0;
+	private String name="";
+	private Agent leilao;
+	private DFAgentDescription[] result;
+	private boolean finito=false;
+	
 	
 	protected void setup() {	
 		
@@ -30,6 +38,10 @@ public class Leilao extends Agent{
 		
 		compradorGui = new Comprador(this);
 		compradorGui.showGui();
+		
+	
+		leilao=this;
+		addBehaviour(new checkFinish());
 						
 	}
 	
@@ -48,6 +60,7 @@ public class Leilao extends Agent{
 				
 				for(int i=0; i<number; i++) {
 					try {
+						name=(String) dadosLeilao[0];
 						ac = cc.createNewAgent("Leilao"+((i+1)+numberVendedores), "agents.AgenteLeiloeiro" , dadosLeilao);
 						ac.start();
 					} catch (StaleProxyException e) {
@@ -60,6 +73,42 @@ public class Leilao extends Agent{
 				System.out.println(dadosLeilao + " adicionada!");
 			}
 	});
+	}
+	private class checkFinish extends Behaviour {
+
+		private static final long serialVersionUID = 1L;
+
+		public void action() {
+			if(!name.equals("")){
+			DFAgentDescription template = new DFAgentDescription();
+			ServiceDescription sd1 = new ServiceDescription();
+			sd1.setType("leilao-" + name);
+			template.addServices(sd1);
+			try {
+				result = DFService.search(leilao, template);
+				// System.out.println("Encontrei estes recursos:");
+				
+				if(result.length==0){
+					//cenas
+					finito=true;
+					BarChart dd= new BarChart("qq");
+					dd.run();
+					done();
+				}
+
+			} catch (FIPAException fe) {
+				fe.printStackTrace();
+			}
+		}
+		}
+
+		@Override
+		public boolean done() {
+			// TODO Auto-generated method stub
+			if(finito)
+				return true;
+			return false;
+		}
 	}
 	
 	public void updateComprador(final Object[] dadosLeilao) {
