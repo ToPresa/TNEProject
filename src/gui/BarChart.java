@@ -35,9 +35,12 @@ public class BarChart extends ApplicationFrame
 	 private ArrayList<String> TypeBuyer = new ArrayList<String>();
 	 private double realPrice = 0.0;
 	 private String nameProductSelled;
+	 JListMedias JList = new JListMedias();
 	 
 	 private ArrayList<String> LocalPrices = new ArrayList<String>();
 	 private ArrayList<String> GlobalPrices = new ArrayList<String>();
+	 private ArrayList<String> GlobalMedia = new ArrayList<String>();
+	 private ArrayList<String> NumberauctionsBuyers = new ArrayList<String>();
 	
 	 public BarChart(final String title) {
 
@@ -104,21 +107,50 @@ public class BarChart extends ApplicationFrame
 	   
 	        for(int i=0; i < LocalPrices.size(); i+=2) {
 	        	mediaLocal += ( Double.parseDouble (LocalPrices.get(i+1)) / Double.parseDouble (LocalPrices.get(i)) );
-	        	System.out.println("JA CRL : " + mediaLocal );
+	        	//System.out.println("JA CRL : " + mediaLocal );
+	        }
+	      
+	        while(GlobalPrices.size() != 0) {
+	        	
+		        double mediaGlobal = 0.0;
+		        int count=0;
+		        String globalAtual=GlobalPrices.get(0);
+		        int i= 0;
+	        	while(i <= GlobalPrices.size()-2) {
+	        		
+		        	if(GlobalPrices.get(i).equals(globalAtual)){
+		        		mediaGlobal += ( Double.parseDouble (GlobalPrices.get(i+1)) / realPrice );
+		        		//System.out.println("iii : " + globalAtual);
+		        		GlobalPrices.remove(i);
+		      
+		        		GlobalPrices.remove(i); 
+		        		i=0;
+		        		count++;
+		        	}
+		        	else
+		        			i+=2;
+		        }
+	        	
+	        	NumberauctionsBuyers.add(globalAtual);
+	        	NumberauctionsBuyers.add(String.valueOf(count));
+	        	GlobalMedia.add(String.valueOf(mediaGlobal));
+	        	
 	        }
 	        
-	        int tamanhoG = GlobalPrices.size()/2;
-	        double mediaGlobal = 0.0;
-	        for(int i=0; i < GlobalPrices.size(); i+=2) {
-	        	mediaGlobal += ( Double.parseDouble (GlobalPrices.get(i+1)) / Double.parseDouble (GlobalPrices.get(i)) );
+	        
+	       // processar media global
+	        int sizeGlobal = GlobalMedia.size();
+	        double mediaGlobalTotal =0.0;
+	        for(int j=0; j < GlobalMedia.size(); j++) {
+	        	mediaGlobalTotal += Double.parseDouble(GlobalMedia.get(j));
 	        }
 	        
-	        double MediaGlobal = (mediaGlobal/tamanhoG);
-	        
+	        double MediaGlobal = mediaGlobalTotal/sizeGlobal;
 	        double MediaLocal = (mediaLocal/tamanhoL);
 	        
 	        
 	        System.out.println("MEDIA LOCAL : " + MediaLocal + "  MEDIA GLOBAL : " + MediaGlobal);
+	        JList.run(String.valueOf(MediaLocal), String.valueOf(MediaGlobal), NumberauctionsBuyers);
 
 	    }
 
@@ -130,15 +162,15 @@ public class BarChart extends ApplicationFrame
 	        demo.setVisible(true);
 
 	    }
-	 
-	 	public void run() {
+	    	 
+	 /*	public void run() {
 
 	        final BarChart demo = new BarChart("Leilões Estatisticas");
 	        demo.pack();
 	        RefineryUtilities.centerFrameOnScreen(demo);
 	        demo.setVisible(true);
 
-	    }
+	    }*/
 	    
 	    public String typeBuyer(String type) {
 	    	if (type.equals("local")) {
@@ -168,14 +200,17 @@ public class BarChart extends ApplicationFrame
 					stringBuffer.append(line);
 
 					String[] parts = line.split(";");
+					String[] nameGlobal = parts[5].split("-");
 					//buscar os valores
 					 NamesAuctions.add(parts[0]);
 					 SellPrice.add(parts[3]); 
-					 TypeBuyer.add(parts[5]);
+					 TypeBuyer.add(nameGlobal[0]);
 					 realPrice = Double.parseDouble(parts[4]);
 					 nameProductSelled = parts[1];
 					 stringBuffer.append("\n");
 					 
+					 
+							 
 					 //System.out.println("AI : " + TypeBuyer);
 					 
 					 if(TypeBuyer.get(TypeBuyer.size() - 1).equals("local")){
@@ -185,17 +220,17 @@ public class BarChart extends ApplicationFrame
 					 }
 					 else {
 						 //System.out.println("AQUI GLOBAL");
-						 GlobalPrices.add(String.valueOf(realPrice));
+						 GlobalPrices.add(String.valueOf(nameGlobal[1]));
 						 GlobalPrices.add(String.valueOf(SellPrice.get(SellPrice.size() - 1)));
 					 }
 
 				}
-				System.out.println(NamesAuctions.size() + "  " + SellPrice.size() + "  " + TypeBuyer.size());
+				//System.out.println(NamesAuctions.size() + "  " + SellPrice.size() + "  " + TypeBuyer.size());
 				
 				// Dar delete dos dados do file
-				//PrintWriter writer = new PrintWriter(file);
-				//writer.print("");
-				//writer.close();
+				PrintWriter writer = new PrintWriter(file);
+				writer.print("");
+				writer.close();
 				
 				fileReader.close();
 

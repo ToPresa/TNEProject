@@ -39,9 +39,11 @@ public class algorithm {
 			cenas*=(G(setpricelocal()));
 		}
 		double newprice=cenas*price;
-		
+		System.out.println("preço global " + newprice);
 		if(newprice/price>0.5){
-			OfferPrice.add(String.valueOf(setpricelocal()));
+			double coiso = setpricelocal();
+			System.out.println("preço global2 " + coiso);
+			OfferPrice.add(String.valueOf(coiso));
 		}
 		OfferPrice.add(String.valueOf(newprice));
 		

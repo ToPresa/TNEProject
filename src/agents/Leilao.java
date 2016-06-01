@@ -102,8 +102,6 @@ public class Leilao extends Agent{
 		vendedorGui.dispose();
 		compradorGui.dispose();
 		
-		barchart.run();
-		
 		// Printout a dismissal message
 		System.out.println("Leiloeiro " + getAID().getLocalName() + " fechou!");
 	}

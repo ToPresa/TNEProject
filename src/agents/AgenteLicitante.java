@@ -30,7 +30,7 @@ public class AgenteLicitante extends Agent {
 		System.out.println("Bem Vindo Sr/Sra: " + getAID().getLocalName() + "!");
 		proposta = false;
 		String[] nameAux = (getAID().getLocalName()).split("-");
-		name = nameAux[1];
+		name = nameAux[1]+"-"+nameAux[2];
 
 		// argumentos com informaçao do comprador
 		// name.getText()+";"+numC.getText()+";"+price.getText()+";"+budget.getText()+";"+comboChoice+";"+comboChoice2;
@@ -118,7 +118,7 @@ public class AgenteLicitante extends Agent {
 				if (!global) {
 					numberrandom = 0 + (Math.random() * (100 - 0));
 				}
-				System.out.println(msg.getConversationId());
+				//System.out.println(msg.getConversationId());
 				if (msg.getConversationId().equals("resultados")) {
 					
 					String[] parts = msg.getContent().toString().split(";");
