@@ -39,8 +39,11 @@ public class algorithm {
 			cenas*=(G(setpricelocal()));
 		}
 		double newprice=cenas*price;
-		OfferPrice.add(String.valueOf(newprice));
 		
+		if(newprice/price>0.5){
+			OfferPrice.add(String.valueOf(setpricelocal()));
+		}
+		OfferPrice.add(String.valueOf(newprice));
 		
 		//calcular b pela formula (é so mesmo perceber a formula e copiar) pag10  (5)   
 		//cumulative distribution G(x) has bounded support [0, vmax],
