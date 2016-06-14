@@ -21,7 +21,6 @@ public class algorithm {
 
 	public double setpricelocal() {
 		double priceset=price;
-			//distribuicao normal abaixo do preco tipo metade da distribuição normal
 			Random rdn = new Random();
 			priceset=(price-(price/7*Math.abs(rdn.nextGaussian())));
 		return priceset;
@@ -29,29 +28,17 @@ public class algorithm {
 	
 	public ArrayList<String> setpriceglobal(){
 		
-		//primeiro preço amis alto
-		//OfferPrice.add(String.valueOf(price));
-		//OfferPrice.add(String.valueOf(price));
-		//NormalDistribution cumulative = new NormalDistribution();	
-		//cumulative.cumulativeProbability(x);
-		double cenas=1;
+		double valor1=1;
 		for(int i=0;i<numberAuctions;i++){
-			cenas*=(G(setpricelocal()));
+			valor1*=(G(setpricelocal()));
 		}
-		double newprice=cenas*price;
-		System.out.println("preço global " + newprice);
+		double newprice=valor1*price;
+		
 		if(newprice/price>0.5){
-			double coiso = setpricelocal();
-			System.out.println("preço global2 " + coiso);
-			OfferPrice.add(String.valueOf(coiso));
+			double valor2 = setpricelocal();
+			OfferPrice.add(String.valueOf(valor2));
 		}
 		OfferPrice.add(String.valueOf(newprice));
-		
-		//calcular b pela formula (é so mesmo perceber a formula e copiar) pag10  (5)   
-		//cumulative distribution G(x) has bounded support [0, vmax],
-		
-		//ver os 3 casos do budget pag17
-		//easy
 		
 		return OfferPrice;
 	}
